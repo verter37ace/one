@@ -1,0 +1,21 @@
+name: ci-mingw
+
+on: [push]
+
+jobs:
+  ci-job:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+        build-type: [Debug, Release]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Update mingw64
+      run: choco upgrade mingw -y --no-progress && refreshenv
+    - name: ci-step
+      shell: bash
+      run: |
+        export "PATH=/c/programdata/chocolatey/lib/mingw/tools/install/mingw64/bin:$PATH" && \
+        ./ci.sh "-G|MinGW Makefiles|-DCMAKE_BUILD_TYPE=${{ matrix.build-type }}"
