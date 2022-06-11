@@ -1,0 +1,18 @@
+name: ci-posix
+
+on: [push]
+
+jobs:
+  ci-job:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, ubuntu-18.04, macos-10.15]
+        build-type: [Debug, Release]
+    steps:
+    - uses: actions/checkout@v2
+    - name: ci-step
+      shell: bash
+      run: |
+        . ci.sh "-DCMAKE_BUILD_TYPE=${{ matrix.build-type }}"
