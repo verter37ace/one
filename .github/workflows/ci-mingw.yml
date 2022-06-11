@@ -10,6 +10,8 @@ jobs:
       matrix:
         os: [windows-latest]
         build-type: [Debug, Release]
+        dll: [ON, OFF]
+        without_crt: [ON, OFF]
     steps:
     - uses: actions/checkout@v2
     - name: Update mingw64
@@ -18,4 +20,4 @@ jobs:
       shell: bash
       run: |
         export "PATH=/c/programdata/chocolatey/lib/mingw/tools/install/mingw64/bin:$PATH" && \
-        . ci.sh "-G|MinGW Makefiles|-DCMAKE_BUILD_TYPE=${{ matrix.build-type }}"
+        . ci.sh "-G|MinGW Makefiles|-DCMAKE_BUILD_TYPE=${{ matrix.build-type }}|-DMDBX_BUILD_SHARED_LIBRARY:BOOL=${{ matrix.dll }}|-DMDBX_WITHOUT_MSVC_CRT:BOOL=${{ matrix.without_crt }}"

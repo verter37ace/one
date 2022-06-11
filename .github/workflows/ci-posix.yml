@@ -10,9 +10,11 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, ubuntu-18.04, macos-10.15]
         build-type: [Debug, Release]
+        alloy: [ON, OFF]
+        cxx: [ON, OFF]
     steps:
     - uses: actions/checkout@v2
-    - name: ci-step
+    - name: ci
       shell: bash
       run: |
-        . ci.sh "-DCMAKE_BUILD_TYPE=${{ matrix.build-type }}"
+        . ci.sh "-DCMAKE_BUILD_TYPE=${{ matrix.build-type }}|-DMDBX_ALLOY_BUILD:BOOL=${{ matrix.alloy }}|-DMDBX_BUILD_CXX:BOOL=${{ matrix.cxx }}"
