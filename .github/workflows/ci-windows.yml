@@ -15,6 +15,8 @@ jobs:
         build-type: [Debug, Release]
         target: [x64, Win32, ARM, ARM64]
         toolset: [v141, v142, v143]
+        dll: [ON, OFF]
+        without_crt: [ON, OFF]
         exclude:
           - os: windows-latest
             toolset: v141
@@ -24,7 +26,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: ci-step
+      env:
+        CI_MAKE_TARGET: ""
       shell: bash
       run: |
-        . ci.sh "-A|${{ matrix.target }}|-T|${{ matrix.toolset }}|-DCMAKE_BUILD_TYPE=${{ matrix.build-type }}" \
-           "--config|${{ matrix.build-type }}" "--build-config|${{ matrix.build-type }}"
+        . ci.sh "-A|${{ matrix.target }}|-T|${{ matrix.toolset }}|-DCMAKE_BUILD_TYPE=${{ matrix.build-type }}|-DMDBX_BUILD_SHARED_LIBRARY:BOOL=${{ matrix.dll }}|-DMDBX_WITHOUT_MSVC_CRT:BOOL=${{ matrix.without_crt }}" \
+          "--config|${{ matrix.build-type }}" "--build-config|${{ matrix.build-type }}"

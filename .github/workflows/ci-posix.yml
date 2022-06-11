@@ -14,9 +14,14 @@ jobs:
       matrix:
         os: [ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-14, macos-13, macos-12]
         build-type: [Debug, Release]
+        alloy: [ON, OFF]
+        cxx: [ON, OFF]
     steps:
     - uses: actions/checkout@v4
     - name: ci-step
       shell: bash
       run: |
-        . ci.sh "-DCMAKE_BUILD_TYPE=${{ matrix.build-type }}"
+        export CI_MAKE_TARGET=$(if [ "$(uname)" = 'Linux' ]; then echo 'check'; elif [ "${{ matrix.build-type }}" != 'Debug' ]; then echo 'test'; else echo 'smoke'; fi) && \
+        export MDBX_BUILD_OPTIONS=$(if [ "${{ matrix.build-type }}" = 'Debug' ]; then echo '-DMDBX_FORCE_ASSERTIONS'; else echo '-DNDEBUG=1'; fi) && \
+        export MDBX_BUILD_CXX=$(if [ "${{ matrix.cxx }}" = 'ON' ]; then echo 'YES'; else echo 'NO'; fi) && \
+        . ci.sh "-DCMAKE_BUILD_TYPE=${{ matrix.build-type }}|-DMDBX_ALLOY_BUILD:BOOL=${{ matrix.alloy }}|-DMDBX_BUILD_CXX:BOOL=${{ matrix.cxx }}"
