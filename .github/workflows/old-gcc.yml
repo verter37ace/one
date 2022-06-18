@@ -6,45 +6,18 @@ jobs:
   gcc-4:
     runs-on: ubuntu-latest
     container:
+#      image: ubuntu:precise
       image: library/gcc:4
     steps:
     - uses: actions/checkout@v2
     - name: ci
       shell: bash
-      run: ./ci.sh
-  gcc-5:
-    runs-on: ubuntu-latest
-    container:
-      image: library/gcc:5
-    steps:
-    - uses: actions/checkout@v2
-    - name: ci
-      shell: bash
-      run: ./ci.sh
-  gcc-6:
-    runs-on: ubuntu-latest
-    container:
-      image: library/gcc:6
-    steps:
-    - uses: actions/checkout@v2
-    - name: ci
-      shell: bash
-      run: ./ci.sh
-  gcc-7:
-    runs-on: ubuntu-latest
-    container:
-      image: library/gcc:7
-    steps:
-    - uses: actions/checkout@v2
-    - name: ci
-      shell: bash
-      run: ./ci.sh
-  gcc-8:
-    runs-on: ubuntu-latest
-    container:
-      image: library/gcc:8
-    steps:
-    - uses: actions/checkout@v2
-    - name: ci
-      shell: bash
-      run: ./ci.sh
+      run: |
+        pwd
+        ls -l
+        gcc -v
+        make --version
+        git --version
+        (which lsb_release && lsb_release -a) || true
+        pip install cmake
+        cmake --version
