@@ -6,8 +6,8 @@ jobs:
   gcc-4:
     runs-on: ubuntu-latest
     container:
-#      image: ubuntu:precise
-      image: library/gcc:4
+      image: ubuntu:trusty
+#      image: library/gcc:4
     steps:
     - uses: actions/checkout@v2
     - name: ci
@@ -15,9 +15,8 @@ jobs:
       run: |
         pwd
         ls -l
-        gcc -v
-        make --version
-        git --version
         (which lsb_release && lsb_release -a) || true
-        pip install cmake
-        cmake --version
+        cmake --version || pip install cmake || true
+        gcc -v || true
+        make --version || true
+        git --version || true
