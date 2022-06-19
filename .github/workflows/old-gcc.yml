@@ -15,7 +15,9 @@ jobs:
       run: |
         pwd
         ls -l
+        id
         (which lsb_release && lsb_release -a) || true
+        apt-get install build-essential cmake git
         cmake --version || pip install cmake || true
         gcc -v || true
         make --version || true
