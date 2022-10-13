@@ -5,29 +5,55 @@ IFS='|' read -r -a build_args <<< "${2:-}"
 IFS='|' read -r -a test_args <<< "${3:-}"
 set -euxo pipefail
 
+function provide_toolchain {
+	set +ex
+	echo "CC: ${CC:=$((which cc || which gcc || which clang || which true) 2>/dev/null)} => $($CC --version | head -1)"
+	echo "CXX: ${CXX:=$((which c++ || which g++ || which clang++ || which true) 2>/dev/null)} => $($CXX --version | head -1)"
+	if [ -z "$(which cmake 2>/dev/null)" -o -z "$(which ninja 2>/dev/null)" ]; then
+		if [ -n "$(which apt 2>/dev/null)" ]; then
+			apt update && apt install -y cmake ninja-build
+		elif [ -n "$(which dnf 2>/dev/null)" ]; then
+			dnf install -y cmake ninja-build
+		elif [ -n "$(which yum 2>/dev/null)" ]; then
+			yum install -y cmake ninja-build
+		fi
+	fi
+	CMAKE_VERSION=$(eval expr $(cmake --version | sed -n 's/cmake version \([0-9]\{1,\}\)\.\([0-9]\{1,\}\)\.\([0-9]\{1,\}\)/\10000 + \200 + \3/p'))
+	echo "CMAKE: $(which cmake 2>/dev/null) => $(cmake --version | head -1) ($CMAKE_VERSION)"
+	set -euxo pipefail
+}
+
 function default_test {
 	GTEST_SHUFFLE=1 GTEST_RUNTIME_LIMIT=99 MALLOC_CHECK_=7 MALLOC_PERTURB_=42 \
-	ctest --output-on-failure --parallel 2 --schedule-random --no-tests=error \
+	ctest --output-on-failure --parallel 3 --schedule-random --no-tests=error \
 	"${test_args[@]+"${test_args[@]}"}"
 }
 
 function default_build {
-	set +ex
-	echo -n "CC: ${CC:=$((which cc || which gcc || which clang || which true) 2>/dev/null)} => " && "$CC" --version | head -1
-	echo -n "CXX: ${CXX:=$((which c++ || which g++ || which clang++ || which true) 2>/dev/null)} => " && "$CXX" --version | head -1
-	echo -n "CMAKE: ${CMAKE:=$((which cmake || which false) 2>/dev/null)} => " && "$CMAKE" --version | head -1
-	mkdir @build && cd @build
-	set -euxo pipefail
-	cmake "${config_args[@]+"${config_args[@]}"}" ../subj && cmake --build . "${build_args[@]+"${build_args[@]}"}"
+	local cmake_use_ninja=""
+	if cmake --help | grep -iq ninja && [ -n "$(which ninja 2>/dev/null)" ] && echo " ${config_args[@]+"${config_args[@]}"}" | grep -qv -e ' -[GTA] '; then
+		echo "NINJA: $(which ninja 2>/dev/null) => $(ninja --version | head -1)"
+		cmake_use_ninja="-G Ninja"
+	fi
+	cmake ${cmake_use_ninja} "${config_args[@]+"${config_args[@]}"}" ../subj && cmake --build . "${build_args[@]+"${build_args[@]}"}"
 }
 
 function default_ci {
-	default_build && default_test && echo Done
+	provide_toolchain
+	if [ -e subj/CMakeLists.txt -a $CMAKE_VERSION -ge 30802 ]; then
+		mkdir @build && cd @build && default_build && default_test && echo "Done (cmake)"
+	elif [ -e subj/GNUmakefile -o -e subj/Makefile -o -e subj/makefile ]; then
+		make -C subj -j2 all && make -C subj test && echo "Done (make)"
+	else
+		echo "Skipped since CMAKE_VERSION ($CMAKE_VERSION) < 3.8.2 and no Makefile"
+	fi
 }
 
-git clean -x -f -d
+git clean -x -f -d || echo "ignore 'git clean' error"
+git config --global submodule.fetchJobs 2
+
 if [ -f url ]; then
-	git clone -q --single-branch --recurse-submodules -j 2 $(cat url) subj
+	git clone -q --single-branch --recurse-submodules $(cat url) subj
 else
 	git submodule sync --recursive
 	git submodule update --init --recursive

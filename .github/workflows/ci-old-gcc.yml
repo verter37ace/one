@@ -1,0 +1,59 @@
+name: ci-old-gcc
+
+on: [push]
+
+jobs:
+  gcc-4:
+    runs-on: ubuntu-latest
+    container:
+      image: library/gcc:4
+    steps:
+    - uses: actions/checkout@v2
+    - name: ci
+      shell: bash
+      run: ./ci.sh
+  gcc-5:
+    runs-on: ubuntu-latest
+    container:
+      image: library/gcc:5
+    steps:
+    - uses: actions/checkout@v2
+    - name: ci
+      shell: bash
+      run: ./ci.sh
+  gcc-6:
+    runs-on: ubuntu-latest
+    container:
+      image: library/gcc:6
+    steps:
+    - uses: actions/checkout@v2
+    - name: ci
+      shell: bash
+      run: ./ci.sh
+  gcc-7:
+    runs-on: ubuntu-latest
+    container:
+      image: library/gcc:7
+    steps:
+    - uses: actions/checkout@v2
+    - name: ci
+      shell: bash
+      run: ./ci.sh
+  gcc-8:
+    runs-on: ubuntu-latest
+    container:
+      image: library/gcc:8
+    steps:
+    - uses: actions/checkout@v2
+    - name: ci
+      shell: bash
+      run: ./ci.sh
+  gcc-9:
+    runs-on: ubuntu-latest
+    container:
+      image: library/gcc:9
+    steps:
+    - uses: actions/checkout@v2
+    - name: ci
+      shell: bash
+      run: ./ci.sh
