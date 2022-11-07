@@ -50,12 +50,12 @@ function default_build {
 
 function default_ci {
 	provide_toolchain
-	if [ -e CMakeLists.txt -a $CMAKE_VERSION -ge 30802 ]; then
+	if [ -e CMakeLists.txt -a $CMAKE_VERSION -ge 30002 ]; then
 		mkdir @build && cd @build && default_build && default_test && echo "Done (cmake)"
 	elif [ -e GNUmakefile -o -e Makefile -o -e makefile ]; then
 		make -j2 all && make test && echo "Done (make)"
 	else
-		echo "Skipped since CMAKE_VERSION ($CMAKE_VERSION) < 3.8.2 and no Makefile"
+		echo "Skipped since CMAKE_VERSION ($CMAKE_VERSION) < 3.0.2 and no Makefile"
 	fi
 }
 
