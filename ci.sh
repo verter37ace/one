@@ -17,8 +17,10 @@ set -euxo pipefail
 
 function provide_toolchain {
 	set +ex
-	echo "CC: ${CC:=$((which cc || which gcc || which clang || which true) 2>/dev/null)} => $($CC --version | head -1)"
-	echo "CXX: ${CXX:=$((which c++ || which g++ || which clang++ || which true) 2>/dev/null)} => $($CXX --version | head -1)"
+	export CC="$((which cc || which gcc || which clang || which true) 2>/dev/null)"
+	export CXX="$((which c++ || which g++ || which clang++ || which true) 2>/dev/null)"
+	echo "CC: ${CC} => $($CC --version | head -1)"
+	echo "CXX: ${CXX} => $($CXX --version | head -1)"
 	if [ -z "$(which cmake 2>/dev/null)" -o -z "$(which ninja 2>/dev/null)" ]; then
 		if [ -n "$(which apt 2>/dev/null)" ]; then
 			apt update && apt install -y cmake ninja-build
@@ -50,12 +52,20 @@ function default_build {
 
 function default_ci {
 	provide_toolchain
+	local skipped=true
+	local ok=true
 	if [ -e CMakeLists.txt -a $CMAKE_VERSION -ge 30002 ]; then
-		mkdir @build && cd @build && default_build && default_test && echo "Done (cmake)"
-	elif [ -e GNUmakefile -o -e Makefile -o -e makefile ]; then
-		make -j2 all && make test && echo "Done (make)"
-	else
+		skipped=false
+		mkdir @build && (cd @build && default_build && default_test && echo "Done (cmake)") || ok=false
+	fi
+	if [ -n "$CC" -a -n "${CI_MAKE_TARGET=test}" ] && [ -e GNUmakefile -o -e Makefile -o -e makefile ]; then
+		skipped=false
+		make -j2 all && make ${CI_MAKE_TARGET} && echo "Done (make)" || ok=false
+	fi
+	if [ $skipped = "true" ]; then
 		echo "Skipped since CMAKE_VERSION ($CMAKE_VERSION) < 3.0.2 and no Makefile"
+	elif [ $ok != "true" ]; then
+		exit 1
 	fi
 }
 
