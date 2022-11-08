@@ -12,7 +12,7 @@ jobs:
         target: [x64, Win32, ARM, ARM64]
         toolset: [v141, v142, v143]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: ci-step
       shell: bash
       run: |
