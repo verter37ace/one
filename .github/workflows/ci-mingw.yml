@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Update mingw64
-      run: choco upgrade mingw -y --no-progress && refreshenv
+      run: choco upgrade mingw -y --no-progress
     - name: ci-step
       shell: bash
       run: |
