@@ -13,7 +13,7 @@ jobs:
         target: [arm64-v8a, armeabi-v7a, "armeabi-v7a with NEON", x86, x86_64]
         build-type: [Debug, Release]
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: nttld/setup-ndk@v1
       id: setup-ndk
       with:
