@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ndk: [r23c, r24]
+        ndk: [r23c, r24, r25c, r26d]
         os: [ubuntu-latest]
         target: [arm64-v8a, armeabi-v7a, "armeabi-v7a with NEON", x86, x86_64]
         build-type: [Debug, Release]
