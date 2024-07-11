@@ -12,6 +12,15 @@ jobs:
     container:
       image: library/gcc:4
     steps:
+    - name: crutch
+      shell: bash
+      run: |
+        # https://github.com/actions/checkout/issues/1809
+        echo "ACTIONS_RUNNER_FORCED_INTERNAL_NODE_VERSION=node16" >> $GITHUB_ENV
+        echo "ACTIONS_RUNNER_FORCE_ACTIONS_NODE_VERSION=node16" >> $GITHUB_ENV
+        # https://github.blog/changelog/2024-03-07-github-actions-all-actions-will-run-on-node20-instead-of-node16-by-default/
+        echo "ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true" >> $GITHUB_ENV
+        exit 0
     - uses: actions/checkout@v3
     - name: update-ssl-certs
       shell: bash
@@ -24,6 +33,15 @@ jobs:
     container:
       image: library/gcc:5
     steps:
+    - name: crutch
+      shell: bash
+      run: |
+        # https://github.com/actions/checkout/issues/1809
+        echo "ACTIONS_RUNNER_FORCED_INTERNAL_NODE_VERSION=node16" >> $GITHUB_ENV
+        echo "ACTIONS_RUNNER_FORCE_ACTIONS_NODE_VERSION=node16" >> $GITHUB_ENV
+        # https://github.blog/changelog/2024-03-07-github-actions-all-actions-will-run-on-node20-instead-of-node16-by-default/
+        echo "ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true" >> $GITHUB_ENV
+        exit 0
     - uses: actions/checkout@v3
     - name: update-ssl-certs
       shell: bash
@@ -36,6 +54,15 @@ jobs:
     container:
       image: library/gcc:6
     steps:
+    - name: crutch
+      shell: bash
+      run: |
+        # https://github.com/actions/checkout/issues/1809
+        echo "ACTIONS_RUNNER_FORCED_INTERNAL_NODE_VERSION=node16" >> $GITHUB_ENV
+        echo "ACTIONS_RUNNER_FORCE_ACTIONS_NODE_VERSION=node16" >> $GITHUB_ENV
+        # https://github.blog/changelog/2024-03-07-github-actions-all-actions-will-run-on-node20-instead-of-node16-by-default/
+        echo "ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true" >> $GITHUB_ENV
+        exit 0
     - uses: actions/checkout@v3
     - name: update-ssl-certs
       shell: bash
