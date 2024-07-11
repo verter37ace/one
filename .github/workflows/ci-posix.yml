@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-12, ubuntu-20.04, macos-11]
+        os: [ubuntu-24.04, ubuntu-22.04, ubuntu-20.04, macos-14, macos-13, macos-12]
         build-type: [Debug, Release]
     steps:
     - uses: actions/checkout@v4
