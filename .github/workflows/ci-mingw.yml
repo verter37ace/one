@@ -17,5 +17,5 @@ jobs:
     - name: ci-step
       shell: bash
       run: |
-        export "PATH=/c/programdata/chocolatey/lib/mingw/tools/install/mingw64/bin:$PATH" && \
+        export "PATH=/c/ProgramData/mingw64/mingw64/bin:$PATH" && \
         . ci.sh "-G|MinGW Makefiles|-DCMAKE_BUILD_TYPE=${{ matrix.build-type }}"
